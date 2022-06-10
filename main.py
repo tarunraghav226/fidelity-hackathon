@@ -1,11 +1,12 @@
 import uvicorn
 from fastapi import FastAPI
 
-from api import authentication_api
+from api import authentication_api, community_api
 
 app = FastAPI(title="Fidelity hackathon")
 
 app.include_router(authentication_api.router)
+app.include_router(community_api.router)
 
 @app.get("/health-check")
 def health_check():
