@@ -1,7 +1,5 @@
-from dotenv import load_dotenv
 import uvicorn
 from fastapi import FastAPI
-from os.path import join, dirname
 
 from api import authentication_api
 
