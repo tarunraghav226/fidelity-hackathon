@@ -23,3 +23,17 @@ async def create_user(data: UserSignUpPayload, db = Depends(database_helper.get_
     access_token = authentication_helper.get_access_token(user)
     refresh_token = authentication_helper.get_refresh_token(user)
     return UserCreateResponse(access_token=access_token, refresh_token=refresh_token)
+
+
+@router.post("/login", summary="Login user", response_model=UserCreateResponse)
+async def login_user(data: UserSignUpPayload, db = Depends(database_helper.get_db)) -> UserCreate:
+    user = database_helper.get_user_by_email(db, data.email)
+    if user is None or not authentication_helper.verify_password(data.password, user.password):
+            raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User with this email/password does not match."
+        )
+    access_token = authentication_helper.get_access_token(user)
+    refresh_token = authentication_helper.get_refresh_token(user)
+    return UserCreateResponse(access_token=access_token, refresh_token=refresh_token)
+
