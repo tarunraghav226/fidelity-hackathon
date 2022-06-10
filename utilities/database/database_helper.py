@@ -3,7 +3,7 @@ from typing import Any, Generator, Optional
 from sqlalchemy.orm import Session
 
 from db.session import SessionLocal
-from models import User
+from models import User, CommunityMember
 from schemas.user_schema import UserCreate
 
 
@@ -23,6 +23,14 @@ def get_user_by_email(db: Session, email: Any) -> Optional[User]:
             )
 
 
+def get_user_by_id(db: Session, id: int) -> Optional[User]:
+    return (
+            db.query(User)
+                .filter(User.id == id)
+                .first()
+            )
+
+
 def create_user(db: Session, obj_in: UserCreate) -> User:
         obj_in_data = jsonable_encoder(obj_in)
         db_obj = User(**obj_in_data)  
@@ -30,3 +38,7 @@ def create_user(db: Session, obj_in: UserCreate) -> User:
         db.commit()
         db.refresh(db_obj)
         return db_obj
+
+
+def is_user_in_community(db: Session, user: User) -> bool:
+    return len(db.query(CommunityMember).filter(CommunityMember.email == user.email).all()) == 1
