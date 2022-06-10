@@ -1,5 +1,5 @@
 from fastapi.encoders import jsonable_encoder
-from typing import Any, Generator, Optional
+from typing import Any, Generator, List, Optional
 from sqlalchemy.orm import Session
 
 from db.session import SessionLocal
@@ -42,3 +42,19 @@ def create_user(db: Session, obj_in: UserCreate) -> User:
 
 def is_user_in_community(db: Session, user: User) -> bool:
     return len(db.query(CommunityMember).filter(CommunityMember.email == user.email).all()) == 1
+
+
+def get_community_members(
+        db: Session
+    ) -> List[CommunityMember]:
+        return (
+            db.query(CommunityMember)
+            .all()
+        )
+
+def add_user_in_community(db: Session, email: str):
+    db_obj = CommunityMember(email=email)  
+    db.add(db_obj)
+    db.commit()
+    db.refresh(db_obj)
+    return db_obj
