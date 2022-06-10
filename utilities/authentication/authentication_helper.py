@@ -1,12 +1,12 @@
 import os
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
-from typing import Union, Any
 from jose import jwt
 from dotenv import load_dotenv
 
 from .authentication_interface import AuthenticationInterface
 from models import User
+from schemas.user_schema import UserCreateResponse
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -45,6 +45,11 @@ class AuthenticationHelper(AuthenticationInterface):
 
     def verify_password(self, password: str, hashed_pass: str) -> bool:
         return password_context.verify(password, hashed_pass)
+
+    def get_tokens(self, user: User) -> UserCreateResponse:
+        access_token = self.get_access_token(user)
+        refresh_token = self.get_refresh_token(user)
+        return UserCreateResponse(access_token=access_token, refresh_token=refresh_token)
 
 
 authentication_helper = AuthenticationHelper()
